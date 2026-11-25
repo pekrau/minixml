@@ -1,0 +1,14 @@
+[project]
+name = "minixml"
+version = "0.5.0"
+description = "Minimalist module for reading, writing, creating and editing an XML element tree."
+readme = "README.md"
+authors = [
+    { name = "Per Kraulis", email = "per.kraulis@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"
