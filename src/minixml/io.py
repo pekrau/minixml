@@ -1,4 +1,4 @@
-"Parse operation on Element."
+"Parse XML code into an Element tree, and unparse an Element tree into XML code."
 
 __all__ = ["parse", "read", "unparse", "write"]
 
@@ -79,7 +79,7 @@ def _write(outfile, element, padding, indent):
 
 
 class ContentHandler(xml.sax.ContentHandler):
-    "Parse XML read events into an Element tree."
+    "Handle XML SAX parse events, turning them into an Element tree."
 
     def __init__(self, element_class=Element):
         assert issubclass(element_class, Element)
