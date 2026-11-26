@@ -137,20 +137,9 @@ class Element:
         except KeyError:
             return default
 
-    def set(self, key, value):
+    def set(self, key: str, value):
         "Set the value of the attribute in this element."
         self[key] = value
-
-    def insert(self, i, other):
-        "Insert the element at position i in the list of children of this element."
-        assert isinstance(other, (Element, str)), other
-        assert self is not other
-        if isinstance(other, Element):
-            if other.parent:
-                raise ValueError(f"element '{other}' must have no parent")
-        self._children.insert(i, other)
-        if isinstance(other, Element):
-            other._parent = self
 
     def append(self, other):
         "Append the element to the end of the list of children of this element."
@@ -162,6 +151,46 @@ class Element:
         self._children.append(other)
         if isinstance(other, Element):
             other._parent = self
+
+    def insert(self, i: int, other):
+        "Insert the element at position i in the list of children of this element."
+        assert i >= 0 and i <= len(self)
+        assert isinstance(other, (Element, str)), other
+        assert self is not other
+        if isinstance(other, Element):
+            if other.parent:
+                raise ValueError(f"element '{other}' must have no parent")
+        self._children.insert(i, other)
+        if isinstance(other, Element):
+            other._parent = self
+
+    def replace(self, i: int, other):
+        """Replace the element at position i in the list of children of this element.
+        The replaced element is returned.
+        """
+        assert i >= 0 and i < len(self)
+        assert isinstance(other, (Element, str)), other
+        assert self is not other
+        if isinstance(other, Element):
+            if other.parent:
+                raise ValueError(f"element '{other}' must have no parent")
+        result = self._children[i]
+        if isinstance(result, Element):
+            result._parent = None
+        self._children[i] = other
+        if isinstance(other, Element):
+            other._parent = self
+        return result
+
+    def pop(self, i: [int, None]=None):
+        "Remove the element at position i (last if None) and return it."
+        assert i is None or (i >= 0 and i < len(self))
+        if i is None:
+            result = self._children.pop()
+        else:
+            result = self._children.pop(i)
+        result._parent = None
+        return result
 
     def free(self):
         "Remove this element from its parent, if any. Return itself."
@@ -175,9 +204,8 @@ class Element:
         and append to the children of this element.
         Return the created element.
         """
-        elem = self.__class__(
-            tag, **attributes
-        )  # Ensure that the same class is used throughout.
+        # Ensure that the same class is used throughout.
+        elem = self.__class__(tag, **attributes)
         self.append(elem)
         return elem
 

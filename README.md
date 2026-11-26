@@ -1,6 +1,6 @@
 # minixml
 
-Minimalist module for reading, writing, creating and editing an XML element tree.
+Minimalist package for reading, writing, creating and editing an XML element tree.
 
 This code has been lovingly hand-crafted. No AI tools were used in its development.
 
@@ -8,19 +8,27 @@ This code has been lovingly hand-crafted. No AI tools were used in its developme
 
 There are no dependencies except for the standard Python library.
 
-The API documentation was produced using **pydoc-markdown**
-https://github.com/NiklasRosenstein/pydoc-markdown
+# License
+
+MIT https://opensource.org/license/mit
+
+# Installation
+
+```
+$ pip install minixml
+```
 
 # Usage
 
 ```python
 import minixml
 
-# The root element.
+# Create the root element.
 svg = minixml.Element("svg", width=320, height=130, xmlns="http://www.w3.org/2000/svg")
 
-# A child element can be created from the parent.
-# It is automatically appended to it as a child.
+
+# A new element can be created from a parent element.
+# It is automatically appended to the parent as a child.
 svg.create(
     "rect",
     width=300,
@@ -30,17 +38,21 @@ svg.create(
     style="fill:rgb(0,0,255);stroke-width:3;stroke:red",
 )
 
+
 # An element can also be created from scratch and subsequently appended.
 t = minixml.Element("text", x=5, y=15, fill="red")
 t.append("I love SVG!")
 svg.append(t)
 
+
 # Serialize the Element tree into XML code; the XML declaration is prepended.
 xmlcode = minixml.unparse(svg, indent=2)
+
 
 # Ensure that unparse and parse are symmetric functions.
 svg2 = minixml.parse(xmlcode)
 assert svg == svg2
+
 
 # Display the result.
 print(xmlcode)
@@ -58,57 +70,25 @@ Produces:
 
 # API
 
-* [minixml](#minixml)
-* [minixml.element](#minixml.element)
-  * [Element](#minixml.element.Element)
-    * [\_\_init\_\_](#minixml.element.Element.__init__)
-    * [\_\_str\_\_](#minixml.element.Element.__str__)
-    * [\_\_getitem\_\_](#minixml.element.Element.__getitem__)
-    * [\_\_setitem\_\_](#minixml.element.Element.__setitem__)
-    * [\_\_delitem\_\_](#minixml.element.Element.__delitem__)
-    * [\_\_contains\_\_](#minixml.element.Element.__contains__)
-    * [\_\_iter\_\_](#minixml.element.Element.__iter__)
-    * [\_\_len\_\_](#minixml.element.Element.__len__)
-    * [\_\_eq\_\_](#minixml.element.Element.__eq__)
-    * [\_\_iadd\_\_](#minixml.element.Element.__iadd__)
-    * [tag](#minixml.element.Element.tag)
-    * [parent](#minixml.element.Element.parent)
-    * [attributes](#minixml.element.Element.attributes)
-    * [children](#minixml.element.Element.children)
-    * [text](#minixml.element.Element.text)
-    * [root](#minixml.element.Element.root)
-    * [depth](#minixml.element.Element.depth)
-    * [get](#minixml.element.Element.get)
-    * [set](#minixml.element.Element.set)
-    * [insert](#minixml.element.Element.insert)
-    * [append](#minixml.element.Element.append)
-    * [free](#minixml.element.Element.free)
-    * [create](#minixml.element.Element.create)
-    * [copy](#minixml.element.Element.copy)
-    * [walk](#minixml.element.Element.walk)
-    * [diff](#minixml.element.Element.diff)
-* [minixml.io](#minixml.io)
-  * [parse](#minixml.io.parse)
-  * [read](#minixml.io.read)
-  * [unparse](#minixml.io.unparse)
-  * [write](#minixml.io.write)
-  * [ContentHandler](#minixml.io.ContentHandler)
+The `minixml` namespace contains the features most client software will need:
+
+* [Element](#element-objects) (class)
+* [parse](#parse) (function)
+* [read](#read) (function)
+* [unparse](#unparse) (function)
+* [write](#write) (function)
+
+These have been imported from `minixml.element` and `minixml.io`, which in most
+cases will not need to be used directly by client software.
+
+The following was produced using **pydoc-markdown**
+https://github.com/NiklasRosenstein/pydoc-markdown
 
 <a id="minixml"></a>
 
 # minixml
 
 Minimalist package for reading, writing, creating and editing an XML element tree.
-
-This namespace provides the class and functions to be used by client software:
-
-* [Element](#minixml.element.Element)
-* [parse](#minixml.io.parse)
-* [read](#minixml.io.read)
-* [unparse](#minixml.io.unparse)
-* [write](#minixml.io.write)
-
-There is usually no need to import anything else from the submodules `element` or `io`.
 
 <a id="minixml.element"></a>
 
@@ -323,20 +303,10 @@ Return the value of the given attribute in this element, or the default.
 #### set
 
 ```python
-def set(key, value)
+def set(key: str, value)
 ```
 
 Set the value of the attribute in this element.
-
-<a id="minixml.element.Element.insert"></a>
-
-#### insert
-
-```python
-def insert(i, other)
-```
-
-Insert the element at position i in the list of children of this element.
 
 <a id="minixml.element.Element.append"></a>
 
@@ -347,6 +317,37 @@ def append(other)
 ```
 
 Append the element to the end of the list of children of this element.
+
+<a id="minixml.element.Element.insert"></a>
+
+#### insert
+
+```python
+def insert(i: int, other)
+```
+
+Insert the element at position i in the list of children of this element.
+
+<a id="minixml.element.Element.replace"></a>
+
+#### replace
+
+```python
+def replace(i: int, other)
+```
+
+Replace the element at position i in the list of children of this element.
+The replaced element is returned.
+
+<a id="minixml.element.Element.pop"></a>
+
+#### pop
+
+```python
+def pop(i: [int, None] = None)
+```
+
+Remove the element at position i (last if None) and return it.
 
 <a id="minixml.element.Element.free"></a>
 
@@ -410,7 +411,7 @@ Return a tuple describing the difference, or None.
 
 # minixml.io
 
-Parse operation on Element.
+Parse XML code into an Element tree, and unparse an Element tree into XML code.
 
 <a id="minixml.io.parse"></a>
 
@@ -467,6 +468,5 @@ The 'decl' value is output first if it is a non-empty string.
 class ContentHandler(xml.sax.ContentHandler)
 ```
 
-Parse XML read events into an Element tree.
-
+Handle XML SAX parse events, turning them into an Element tree.
 

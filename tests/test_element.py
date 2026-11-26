@@ -48,6 +48,14 @@ def test_element_tree():
     a += c
     assert len(a) == 3
     assert a.children == [b, e, c]
+    x = a.pop(2)
+    assert x is c
+    assert a.children == [b, e]
+    d = Element("d")
+    y = a.replace(1, d)
+    assert y is e
+    assert y.parent is None
+    assert a.children == [b, d]
 
 def test_tree_copy():
     "A copy creates new instances all the way down."

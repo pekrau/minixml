@@ -1,13 +1,31 @@
 [project]
 name = "minixml"
-version = "0.5.0"
-description = "Minimalist module for reading, writing, creating and editing an XML element tree."
+version = "0.6.4"
+description = "Minimalist package for reading, writing, creating and editing an XML element tree."
 readme = "README.md"
 authors = [
     { name = "Per Kraulis", email = "per.kraulis@gmail.com" }
 ]
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.14"
 dependencies = []
+keywords = ["python", "package", "XML", "parse", "unparse"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Text Processing :: Markup :: XML",
+]
+
+[project.urls]
+Homepage = "https://github.com/pekrau/minixml"
+Issues = "https://github.com/pekrau/minixml/issues"
+# Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 
 [build-system]
 requires = ["uv_build>=0.12.21,<0.13.0"]
