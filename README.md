@@ -4,9 +4,59 @@ Minimalist module for reading, writing, creating and editing an XML element tree
 
 This code has been lovingly hand-crafted. No AI tools were used in its development.
 
+# Software
+
 There are no dependencies except for the standard Python library.
 
-# Table of Contents
+The API documentation was produced using **pydoc-markdown**
+https://github.com/NiklasRosenstein/pydoc-markdown
+
+# Usage
+
+```python
+import minixml
+
+# The root element.
+svg = minixml.Element("svg", width=320, height=130, xmlns="http://www.w3.org/2000/svg")
+
+# A child element can be created from the parent.
+# It is automatically appended to it as a child.
+svg.create(
+    "rect",
+    width=300,
+    height=100,
+    x=10,
+    y=10,
+    style="fill:rgb(0,0,255);stroke-width:3;stroke:red",
+)
+
+# An element can also be created from scratch and subsequently appended.
+t = minixml.Element("text", x=5, y=15, fill="red")
+t.append("I love SVG!")
+svg.append(t)
+
+# Serialize the Element tree into XML code; the XML declaration is prepended.
+xmlcode = minixml.unparse(svg, indent=2)
+
+# Ensure that unparse and parse are symmetric functions.
+svg2 = minixml.parse(xmlcode)
+assert svg == svg2
+
+# Display the result.
+print(xmlcode)
+```
+
+Produces:
+
+```svg
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="320" height="130" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="100" x="10" y="10" style="fill:rgb(0,0,255);stroke-width:3;stroke:red"/>
+  <text x="5" y="15" fill="red">I love SVG!</text>
+</svg>
+```
+
+# API
 
 * [minixml](#minixml)
 * [minixml.element](#minixml.element)
@@ -49,6 +99,16 @@ There are no dependencies except for the standard Python library.
 # minixml
 
 Minimalist package for reading, writing, creating and editing an XML element tree.
+
+This namespace provides the class and functions to be used by client software:
+
+* [Element](#minixml.element.Element)
+* [parse](#minixml.io.parse)
+* [read](#minixml.io.read)
+* [unparse](#minixml.io.unparse)
+* [write](#minixml.io.write)
+
+There is usually no need to import anything else from the submodules `element` or `io`.
 
 <a id="minixml.element"></a>
 
