@@ -1,6 +1,6 @@
 [project]
 name = "minixml"
-version = "0.6.5"
+version = "0.7.1"
 description = "Minimalist package for reading, writing, creating and editing an XML element tree."
 readme = "README.md"
 authors = [

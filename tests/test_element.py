@@ -22,6 +22,8 @@ def test_create_attribute():
     assert b.attributes == {"style": "c"}
     assert "style" in b
     assert b["style"] == "c"
+    del b["style"]
+    assert "style" not in b
 
 def test_element_tree():
     "Element children creation and manipulation."
@@ -56,6 +58,13 @@ def test_element_tree():
     assert y is e
     assert y.parent is None
     assert a.children == [b, d]
+    assert a.index(b) == 0
+    a[0] = y
+    assert b not in a
+    assert y in a
+    with pytest.raises(ValueError):
+        i = a.index(b)
+    assert a[-1] is d
 
 def test_tree_copy():
     "A copy creates new instances all the way down."

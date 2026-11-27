@@ -94,7 +94,12 @@ Minimalist package for reading, writing, creating and editing an XML element tre
 
 # minixml.element
 
-Element class.
+Class to represent an XML element.
+
+An instance of Element has a tag, attributes, children and possibly a
+parent. An instance can be part of at most one element tree. All
+operations should be performed using the methods, which will maintain
+the integrity of the references between instances.
 
 <a id="minixml.element.Element"></a>
 
@@ -131,40 +136,44 @@ Return the string representation of the element's starting tag.
 #### \_\_getitem\_\_
 
 ```python
-def __getitem__(key)
+def __getitem__(key: [int, str])
 ```
 
-Get the value of the attribute in this element.
+If 'key' is int, get the key'th child.
+If 'key' is str, get the value of the attribute.
 
 <a id="minixml.element.Element.__setitem__"></a>
 
 #### \_\_setitem\_\_
 
 ```python
-def __setitem__(key, value)
+def __setitem__(key: [int, str], value)
 ```
 
-Set the value of the attribute in this element.
+If 'key' is int, set the key'th child. Convert value to str if not Element.
+If 'key' is str, set the value of the attribute.
 
 <a id="minixml.element.Element.__delitem__"></a>
 
 #### \_\_delitem\_\_
 
 ```python
-def __delitem__(key)
+def __delitem__(key: [int, str])
 ```
 
-Delete the attribute in this element.
+If 'key' is int, delete the key'th child.
+If 'key' is str, delete the attribute.
 
 <a id="minixml.element.Element.__contains__"></a>
 
 #### \_\_contains\_\_
 
 ```python
-def __contains__(key)
+def __contains__(key: [str, Element])
 ```
 
-Does this element have the given attribute?
+If 'key' is str, does this element have the given attribute?
+If 'key' is an Element instance, is it among the children?
 
 <a id="minixml.element.Element.__iter__"></a>
 
@@ -201,7 +210,7 @@ Are this element and the other equal, recursively? Ignores the parent.
 #### \_\_iadd\_\_
 
 ```python
-def __iadd__(other)
+def __iadd__(other: [str, Element])
 ```
 
 Append the other element to the end of the list of children of this element.
@@ -212,7 +221,7 @@ Append the other element to the end of the list of children of this element.
 
 ```python
 @property
-def tag()
+def tag() -> str
 ```
 
 Return the tag of this element; read-only.
@@ -223,7 +232,7 @@ Return the tag of this element; read-only.
 
 ```python
 @property
-def parent()
+def parent() -> [None, Element]
 ```
 
 Return the parent, if any, of this element; read-only.
@@ -234,7 +243,7 @@ Return the parent, if any, of this element; read-only.
 
 ```python
 @property
-def attributes()
+def attributes() -> dict
 ```
 
 Return the dictionary of the attributes; read only.
@@ -247,7 +256,7 @@ it will therefore not affect the attributes in the instance.
 
 ```python
 @property
-def children()
+def children() -> list
 ```
 
 Return the list of children; read only.
@@ -260,7 +269,7 @@ will therefore not affect the list of children in the instance.
 
 ```python
 @property
-def text()
+def text() -> str
 ```
 
 Return the text content of this element.
@@ -272,7 +281,7 @@ All children that are non-blank texts are concatenated.
 
 ```python
 @property
-def root()
+def root() -> Element
 ```
 
 Return the root element of this element. May be self.
@@ -283,7 +292,7 @@ Return the root element of this element. May be self.
 
 ```python
 @property
-def depth()
+def depth() -> int
 ```
 
 Depth of hierarchy for this element; number of parent steps to root.
@@ -293,58 +302,70 @@ Depth of hierarchy for this element; number of parent steps to root.
 #### get
 
 ```python
-def get(key, default=None)
+def get(key: str, default=None)
 ```
 
-Return the value of the given attribute in this element, or the default.
+Get the value of the 'key' attribute, or return the default if not present.
 
 <a id="minixml.element.Element.set"></a>
 
 #### set
 
 ```python
-def set(key: str, value)
+def set(key: str, value) -> None
 ```
 
 Set the value of the attribute in this element.
+
+<a id="minixml.element.Element.index"></a>
+
+#### index
+
+```python
+def index(other: [str, Element]) -> int
+```
+
+Return the slot number for 'other' among the children of this element.
+Checks for element equality, not identity.
+Raise IndexError if not present.
 
 <a id="minixml.element.Element.append"></a>
 
 #### append
 
 ```python
-def append(other)
+def append(other: [str, Element]) -> None
 ```
 
-Append the element other to the end of the list of children of this element.
+Append the other element to the end of the list of children of this element.
 
 <a id="minixml.element.Element.insert"></a>
 
 #### insert
 
 ```python
-def insert(i: int, other)
+def insert(i: int, other: [str, Element]) -> None
 ```
 
-Insert the other element at position i in the list of children of this element.
+Insert 'other' at position 'i' in the list of children of this element.
 
 <a id="minixml.element.Element.replace"></a>
 
 #### replace
 
 ```python
-def replace(i: int, other)
+def replace(i: int, other: [str, Element]) -> [str, Element]
 ```
 
-Replace the element at position i in the list of children of this element
-with the other. The replaced element is returned.
+Replace the element at position 'i' in the list of children of
+this element with 'other'. The replaced element is returned.
 
 <a id="minixml.element.Element.pop"></a>
 
 #### pop
 
 ```python
-def pop(i: [int, None] = None)
+def pop(i: [int, None] = None) -> [str, Element]
 ```
 
 Remove the element at position i (last if None) and return it.
@@ -354,7 +375,7 @@ Remove the element at position i (last if None) and return it.
 #### free
 
 ```python
-def free()
+def free() -> Element
 ```
 
 Remove this element from its parent, if any. Return itself.
@@ -364,7 +385,7 @@ Remove this element from its parent, if any. Return itself.
 #### create
 
 ```python
-def create(tag, **attributes)
+def create(tag: str, **attributes) -> Element
 ```
 
 Create an element with the given tag and attributes,
@@ -376,7 +397,7 @@ Return the created element.
 #### copy
 
 ```python
-def copy()
+def copy() -> Element
 ```
 
 Make a copy of this element and its children (i.e. deepcopy).
@@ -400,7 +421,7 @@ NOTE: The test function must handle both Element instances and strings.
 #### diff
 
 ```python
-def diff(other)
+def diff(other: Element)
 ```
 
 Return the first difference between this element and the other, recursively.

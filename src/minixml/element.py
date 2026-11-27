@@ -40,29 +40,55 @@ class Element:
             result.append("/>")
         return " ".join(result)
 
-    def __getitem__(self, key):
-        "Get the value of the attribute in this element."
+    def __getitem__(self, key: [int, str]):
+        """If 'key' is int, get the key'th child.
+        If 'key' is str, get the value of the attribute.
+        """
+        if isinstance(key, int):
+            try:
+                return self._children[key]
+            except IndexError:
+                raise IndexError(f"no child '{key}' in element {self}")
         try:
             return self._attributes[key]
         except KeyError:
-            raise KeyError(f"no such attribute '{key}' in element {self}")
+            raise KeyError(f"no attribute '{key}' in element {self}")
 
-    def __setitem__(self, key, value):
-        "Set the value of the attribute in this element."
-        if not isinstance(value, str):
-            value = str(value)
-        self._attributes[key] = value
+    def __setitem__(self, key: [int, str], value):
+        """If 'key' is int, set the key'th child. Convert value to str if not Element.
+        If 'key' is str, set the value of the attribute.
+        """
+        if isinstance(key, int):
+            try:
+                self._children[key] = value if isinstance(value, Element) else str(value)
+            except IndexError:
+                raise IndexError(f"cannot set child '{key}' in element {self}")
+        else:
+            self._attributes[key] = value
 
-    def __delitem__(self, key):
-        "Delete the attribute in this element."
-        try:
-            del self._attributes[key]
-        except KeyError:
-            raise KeyError(f"no such attribute '{key}' in element {self}")
+    def __delitem__(self, key: [int, str]):
+        """If 'key' is int, delete the key'th child.
+        If 'key' is str, delete the attribute.
+        """
+        if isinstance(key, int):
+            try:
+                del self._children[key]
+            except IndexError:
+                raise IndexError(f"cannot delete child '{key}' in element {self}")
+        else:
+            try:
+                del self._attributes[key]
+            except KeyError:
+                raise KeyError(f"no attribute '{key}' in element {self}")
 
-    def __contains__(self, key):
-        "Does this element have the given attribute?"
-        return key in self._attributes
+    def __contains__(self, key: [str, Element]):
+        """If 'key' is str, does this element have the given attribute?
+        If 'key' is an Element instance, is it among the children?
+        """
+        if isinstance(key, Element):
+            return key in self._children
+        else:
+            return key in self._attributes
 
     def __iter__(self):
         "Iterate over the children of this element."
@@ -76,23 +102,23 @@ class Element:
         "Are this element and the other equal, recursively? Ignores the parent."
         return not self.diff(other)
 
-    def __iadd__(self, other):
+    def __iadd__(self, other: [str, Element]):
         "Append the other element to the end of the list of children of this element."
         self.append(other)
         return self
 
     @property
-    def tag(self):
+    def tag(self) -> str:
         "Return the tag of this element; read-only."
         return self._tag
 
     @property
-    def parent(self):
+    def parent(self) -> [None, Element]:
         "Return the parent, if any, of this element; read-only."
         return self._parent
 
     @property
-    def attributes(self):
+    def attributes(self) -> dict:
         """Return the dictionary of the attributes; read only.
         This is a shallow copy of the dictionary in the instance. Changing
         it will therefore not affect the attributes in the instance.
@@ -100,7 +126,7 @@ class Element:
         return self._attributes.copy()
 
     @property
-    def children(self):
+    def children(self) -> list:
         """Return the list of children; read only.
         This is a shallow copy of the list in the instance. Changing it
         will therefore not affect the list of children in the instance.
@@ -108,7 +134,7 @@ class Element:
         return list(self._children)
 
     @property
-    def text(self):
+    def text(self) -> str:
         """Return the text content of this element.
         All children that are non-blank texts are concatenated.
         """
@@ -119,7 +145,7 @@ class Element:
         return "".join(result)
 
     @property
-    def root(self):
+    def root(self) -> Element:
         "Return the root element of this element. May be self."
         result = self
         while result._parent is not None:
@@ -127,7 +153,7 @@ class Element:
         return result
 
     @property
-    def depth(self):
+    def depth(self) -> int:
         "Depth of hierarchy for this element; number of parent steps to root."
         result = 0
         elem = self
@@ -136,50 +162,55 @@ class Element:
             elem = elem._parent
         return result
 
-    def get(self, key, default=None):
-        "Return the value of the given attribute in this element, or the default."
-        try:
-            return self[key]
-        except KeyError:
-            return default
+    def get(self, key: str, default=None):
+        "Get the value of the 'key' attribute, or return the default if not present."
+        return self._attributes.get(key, default)
 
-    def set(self, key: str, value):
+    def set(self, key: str, value) -> None:
         "Set the value of the attribute in this element."
-        self[key] = value
+        self._attributes[key] = value
 
-    def append(self, other):
+    def index(self, other: [str, Element]) -> int:
+        """Return the slot number for 'other' among the children of this element.
+        Checks for element equality, not identity.
+        Raise IndexError if not present.
+        """
+        try:
+            return self._children.index(other)
+        except ValueError:
+            raise ValueError(f"no element '{other}' among children")
+
+    def append(self, other: [str, Element]) -> None:
         "Append the other element to the end of the list of children of this element."
-        assert isinstance(other, (Element, str)), other
-        assert self is not other
         if isinstance(other, Element):
             if other.parent:
                 raise ValueError(f"element '{other}' must have no parent")
+            if other is self:
+                raise ValueError(f"cannot append element '{other}' to itself")
         self._children.append(other)
         if isinstance(other, Element):
             other._parent = self
 
-    def insert(self, i: int, other):
-        "Insert the other element at position i in the list of children of this element."
-        assert i >= 0 and i <= len(self)
-        assert isinstance(other, (Element, str)), other
-        assert self is not other
+    def insert(self, i: int, other: [str, Element]) -> None:
+        "Insert 'other' at position 'i' in the list of children of this element."
         if isinstance(other, Element):
             if other.parent:
                 raise ValueError(f"element '{other}' must have no parent")
+            if other is self:
+                raise ValueError(f"cannot insert element '{other}' into itself")
         self._children.insert(i, other)
         if isinstance(other, Element):
             other._parent = self
 
-    def replace(self, i: int, other):
-        """Replace the element at position i in the list of children of this element
-        with the other. The replaced element is returned.
+    def replace(self, i: int, other: [str, Element]) -> [str, Element]:
+        """Replace the element at position 'i' in the list of children of
+        this element with 'other'. The replaced element is returned.
         """
-        assert i >= 0 and i < len(self)
-        assert isinstance(other, (Element, str)), other
-        assert self is not other
         if isinstance(other, Element):
             if other.parent:
                 raise ValueError(f"element '{other}' must have no parent")
+            if other is self:
+                raise ValueError(f"cannot replace element '{other}' into itself")
         result = self._children[i]
         if isinstance(result, Element):
             result._parent = None
@@ -188,24 +219,26 @@ class Element:
             other._parent = self
         return result
 
-    def pop(self, i: [int, None]=None):
+    def pop(self, i: [int, None]=None) -> [str, Element]:
         "Remove the element at position i (last if None) and return it."
-        assert i is None or (i >= 0 and i < len(self))
-        if i is None:
-            result = self._children.pop()
-        else:
-            result = self._children.pop(i)
+        try:
+            if i is None:
+                result = self._children.pop()
+            else:
+                result = self._children.pop(i)
+        except IndexError:
+            raise IndexError(f"no child '{i}' to pop from this element")
         result._parent = None
         return result
 
-    def free(self):
+    def free(self) -> Element:
         "Remove this element from its parent, if any. Return itself."
         if self._parent is not None:
             self._parent._children.remove(self)
             self._parent = None
         return self
 
-    def create(self, tag, **attributes):
+    def create(self, tag: str, **attributes) -> Element:
         """Create an element with the given tag and attributes,
         and append to the children of this element.
         Return the created element.
@@ -215,7 +248,7 @@ class Element:
         self.append(elem)
         return elem
 
-    def copy(self):
+    def copy(self) -> Element:
         """Make a copy of this element and its children (i.e. deepcopy).
         The returned copy element has no parent.
         """
@@ -247,7 +280,7 @@ class Element:
             elif test is None or test(child):
                 yield child
 
-    def diff(self, other):
+    def diff(self, other: Element):
         """Return the first difference between this element and the other, recursively.
         Ignores the parents of this element and the other.
         Return a tuple describing the difference, or None.
