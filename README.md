@@ -2,20 +2,20 @@
 
 Minimalist package for reading, writing, creating and editing an XML element tree.
 
-This code has been lovingly hand-crafted. No AI tools were used in its development.
-
 # Software
 
 There are no dependencies except for the standard Python library.
 
+This code has been lovingly hand-crafted. No AI tools were used in its development.
+
 # License
 
-MIT https://opensource.org/license/mit
+[MIT](https://raw.githubusercontent.com/pekrau/minixml/refs/heads/main/LICENSE)
 
 # Installation
 
 ```
-$ pip install minixml
+pip install minixml
 ```
 
 # Usage
@@ -50,8 +50,7 @@ xmlcode = minixml.unparse(svg, indent=2)
 
 
 # Ensure that unparse and parse are symmetric functions.
-svg2 = minixml.parse(xmlcode)
-assert svg == svg2
+assert svg == minixml.parse(xmlcode)
 
 
 # Display the result.
@@ -78,10 +77,11 @@ The `minixml` namespace contains the features most client software will need:
 * [unparse](#unparse) (function)
 * [write](#write) (function)
 
-These have been imported from `minixml.element` and `minixml.io`, which in most
-cases will not need to be used directly by client software.
+These are automatically imported into `minixml` from `minixml.element`
+and `minixml.io`, which modules in most cases will not have to be
+imported directly by client software.
 
-The following was produced using **pydoc-markdown**
+The following was generated using **pydoc-markdown**
 https://github.com/NiklasRosenstein/pydoc-markdown
 
 <a id="minixml"></a>
@@ -204,7 +204,7 @@ Are this element and the other equal, recursively? Ignores the parent.
 def __iadd__(other)
 ```
 
-Append the other to the end of the list of children of this other.
+Append the other element to the end of the list of children of this element.
 
 <a id="minixml.element.Element.tag"></a>
 
@@ -316,7 +316,7 @@ Set the value of the attribute in this element.
 def append(other)
 ```
 
-Append the element to the end of the list of children of this element.
+Append the element other to the end of the list of children of this element.
 
 <a id="minixml.element.Element.insert"></a>
 
@@ -326,7 +326,7 @@ Append the element to the end of the list of children of this element.
 def insert(i: int, other)
 ```
 
-Insert the element at position i in the list of children of this element.
+Insert the other element at position i in the list of children of this element.
 
 <a id="minixml.element.Element.replace"></a>
 
@@ -336,8 +336,8 @@ Insert the element at position i in the list of children of this element.
 def replace(i: int, other)
 ```
 
-Replace the element at position i in the list of children of this element.
-The replaced element is returned.
+Replace the element at position i in the list of children of this element
+with the other. The replaced element is returned.
 
 <a id="minixml.element.Element.pop"></a>
 

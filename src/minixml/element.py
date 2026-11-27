@@ -1,4 +1,10 @@
-"Element class."
+"""Class to represent an XML element.
+
+An instance of Element has a tag, attributes, children and possibly a
+parent. An instance can be part of at most one element tree. All
+operations should be performed using the methods, which will maintain
+the integrity of the references between instances.
+"""
 
 __all__ = ["Element"]
 
@@ -71,7 +77,7 @@ class Element:
         return not self.diff(other)
 
     def __iadd__(self, other):
-        "Append the other to the end of the list of children of this other."
+        "Append the other element to the end of the list of children of this element."
         self.append(other)
         return self
 
@@ -142,7 +148,7 @@ class Element:
         self[key] = value
 
     def append(self, other):
-        "Append the element to the end of the list of children of this element."
+        "Append the other element to the end of the list of children of this element."
         assert isinstance(other, (Element, str)), other
         assert self is not other
         if isinstance(other, Element):
@@ -153,7 +159,7 @@ class Element:
             other._parent = self
 
     def insert(self, i: int, other):
-        "Insert the element at position i in the list of children of this element."
+        "Insert the other element at position i in the list of children of this element."
         assert i >= 0 and i <= len(self)
         assert isinstance(other, (Element, str)), other
         assert self is not other
@@ -165,8 +171,8 @@ class Element:
             other._parent = self
 
     def replace(self, i: int, other):
-        """Replace the element at position i in the list of children of this element.
-        The replaced element is returned.
+        """Replace the element at position i in the list of children of this element
+        with the other. The replaced element is returned.
         """
         assert i >= 0 and i < len(self)
         assert isinstance(other, (Element, str)), other
